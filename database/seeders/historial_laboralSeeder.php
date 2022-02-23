@@ -29,7 +29,7 @@ class historial_laboralSeeder extends Seeder
                 'cargo' => 'Aux',
                 'fecha_inicio' => '2021-05-03',
                 'fecha_terminacion' => '2022-01-10',
-                'users_id' => 1,
+                'users_id' => 2,
             ]
         ]);
         historial_laboral::insert([
@@ -38,7 +38,7 @@ class historial_laboralSeeder extends Seeder
                 'cargo' => 'Junior Dev',
                 'fecha_inicio' => '2021-02-03',
                 'fecha_terminacion' => '2022-02-01',
-                'users_id' => 1,
+                'users_id' => 3,
             ]
         ]);
         historial_laboral::insert([
@@ -47,7 +47,7 @@ class historial_laboralSeeder extends Seeder
                 'cargo' => 'Senior',
                 'fecha_inicio' => '2021-01-01',
                 'fecha_terminacion' => '2022-01-01',
-                'users_id' => 1,
+                'users_id' => 4,
             ]
         ]);
     }

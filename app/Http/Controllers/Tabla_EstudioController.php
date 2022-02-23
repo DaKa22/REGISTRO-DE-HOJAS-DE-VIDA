@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\tabla_estudio;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
@@ -45,6 +46,21 @@ class Tabla_EstudioController extends Controller
      */
     public function store(Request $request)
     {
+        // $user=$this->show($request['users_id']);
+        $user=User::where('id',$request['users_id'])->first();
+        if ($request['fecha_terminacion']>Carbon::now()->toDateString()) {
+            return redirect()->back()->with([
+                'created' => 0,
+                'mensaje' => 'El Usuario NO puede terminar sus estudio superando la fecha actual'
+            ]);
+        }
+        $fecha_nacimiento=Carbon::parse($user->fecha_nacimiento)->age;
+        if ($fecha_nacimiento < 18) {
+           return redirect()->back()->with([
+               'created' => 0,
+               'mensaje' => 'El Usuario ES MENOR de edad'
+           ]);
+        }
         if($request->id){
             try {
                 $tabla_estudio=tabla_estudio::where('id',$request->id)->first();
@@ -53,6 +69,20 @@ class Tabla_EstudioController extends Controller
                         'status' => 'ERROR',
                         'message' => 'No existe La tabla estudio.'
                     ]);
+                }
+
+                if ($request['fecha_terminacion']>Carbon::now()->toDateString()) {
+                    return redirect()->back()->with([
+                        'created' => 0,
+                        'mensaje' => 'El Usuario NO puede terminar sus estudio superando la fecha actual'
+                    ]);
+                }
+                $fecha_terminacion=Carbon::parse($request['fecha_terminacion'])->age;
+                if ($fecha_terminacion < 18) {
+                   return redirect()->back()->with([
+                       'created' => 0,
+                       'mensaje' => 'El Usuario ES MENOR de edad'
+                   ]);
                 }
 
                 $tabla_estudio->update([

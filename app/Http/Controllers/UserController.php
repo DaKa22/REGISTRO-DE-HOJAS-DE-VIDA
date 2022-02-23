@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -44,16 +45,45 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+                if ($user_restore=user::where('cedula',$request->cedula)->withTrashed()->first()) {
+                    $user_restore->withTrashed()->restore();
+                    if ($user_restore->save()) {
+                        return redirect()->back()->with([
+                            'created' => 1,
+                            'mensaje' => 'El Usuario se  Restauro Correctamente'
+                        ]);
+                    }else{
+                        return redirect()->back()->with([
+                            'created' => 0,
+                            'mensaje' => 'El Usuario NO se  Restauro Correctamente'
+                        ]);
+                    }
+                }
+
+         $fecha_nacimiento=Carbon::parse($request['fecha_nacimiento'])->age;
+         if ($fecha_nacimiento < 18) {
+            return redirect()->back()->with([
+                'created' => 0,
+                'mensaje' => 'El Usuario ES MENOR de edad'
+            ]);
+         }
         if($request->id){
             try {
                 $user=user::where('id',$request->id)->first();
+
                 if(!$user) {
                     return response()->json([
                         'status' => 'ERROR',
                         'message' => 'No existe El Usuario.'
                     ]);
                 }
-
+                $fecha_nacimiento=Carbon::parse($request['fecha_nacimiento'])->age;
+                if ($fecha_nacimiento < 18) {
+                   return redirect()->back()->with([
+                       'created' => 0,
+                       'mensaje' => 'El Usuario ES MENOR de edad'
+                   ]);
+                }
                 $user->update([
                     'cedula' => $request['cedula'],
                     'nombre1' => $request['nombre1'],
@@ -87,44 +117,46 @@ class UserController extends Controller
                     'message' => $e->getMessage()
                 ]);
             }
-        }
-        try {
+        }else{
+            try {
 
-            $user = user::create([
-                'cedula' => $request['cedula'],
-                'nombre1' => $request['nombre1'],
-                'nombre2' => $request['nombre2'],
-                'apellido1' => $request['apellido1'],
-                'apellido2' => $request['apellido2'],
-                'telefono' => $request['telefono'],
-                'direccion' => $request['direccion'],
-                'email' => $request['email'],
-                'genero' => $request['genero'],
-                'nacionalidad' => $request['nacionalidad'],
-                'estado_civil' => $request['estado_civil'],
-                'fecha_nacimiento' => $request['fecha_nacimiento'],
-                'rh' => $request['rh'],
-                'password' => Hash::make($request['password']),
-            ]);
-            if($user){
-                return redirect()->back()->with([
-                    'created' => 1,
-                    'mensaje' => 'El Usuario se creo correctamente'
+                $user = user::create([
+                    'cedula' => $request['cedula'],
+                    'nombre1' => $request['nombre1'],
+                    'nombre2' => $request['nombre2'],
+                    'apellido1' => $request['apellido1'],
+                    'apellido2' => $request['apellido2'],
+                    'telefono' => $request['telefono'],
+                    'direccion' => $request['direccion'],
+                    'email' => $request['email'],
+                    'genero' => $request['genero'],
+                    'nacionalidad' => $request['nacionalidad'],
+                    'estado_civil' => $request['estado_civil'],
+                    'fecha_nacimiento' => $request['fecha_nacimiento'],
+                    'rh' => $request['rh'],
+                    'password' => Hash::make($request['password']),
                 ]);
-            }else {
-                return redirect()->back()->with([
-                    'created' => 0,
-                    'mensaje' => 'El Usuario NO se creo correctamente'
+                if($user){
+                    return redirect()->back()->with([
+                        'created' => 1,
+                        'mensaje' => 'El Usuario se creo correctamente'
+                    ]);
+                }else {
+                    return redirect()->back()->with([
+                        'created' => 0,
+                        'mensaje' => 'El Usuario NO se creo correctamente'
+                    ]);
+                }
+
+
+            } catch (QueryException $e) {
+                return response()->json([
+                    'status' => 'ERROR',
+                    'message' => $e->getMessage()
                 ]);
             }
-
-
-        } catch (QueryException $e) {
-            return response()->json([
-                'status' => 'ERROR',
-                'message' => $e->getMessage()
-            ]);
         }
+
 
     }
 
