@@ -45,20 +45,6 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-                if ($user_restore=user::where('cedula',$request->cedula)->withTrashed()->first()) {
-                    $user_restore->withTrashed()->restore();
-                    if ($user_restore->save()) {
-                        return redirect()->back()->with([
-                            'created' => 1,
-                            'mensaje' => 'El Usuario se  Restauro Correctamente'
-                        ]);
-                    }else{
-                        return redirect()->back()->with([
-                            'created' => 0,
-                            'mensaje' => 'El Usuario NO se  Restauro Correctamente'
-                        ]);
-                    }
-                }
 
          $fecha_nacimiento=Carbon::parse($request['fecha_nacimiento'])->age;
          if ($fecha_nacimiento < 18) {

@@ -44,7 +44,7 @@ function updateUser(id){
             $('#fecha_nacimiento').val(data.fecha_nacimiento)
             $('#rh').val(data.rh)
             $("#id").val(data.id)
-            $("#titulo").text("Editar Linea")
+            $("#titulo").text("Editar Usuario")
         }
     });
 }

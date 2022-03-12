@@ -54,8 +54,8 @@ class Tabla_EstudioController extends Controller
                 'mensaje' => 'El Usuario NO puede terminar sus estudio superando la fecha actual'
             ]);
         }
-        $fecha_nacimiento=Carbon::parse($user->fecha_nacimiento)->age;
-        if ($fecha_nacimiento < 18) {
+        $fecha_M_edad=Carbon::parse($user->fecha_nacimiento)->addYear(18);
+        if ($fecha_M_edad->toDateString() > $request['fecha_terminacion'] ) {
            return redirect()->back()->with([
                'created' => 0,
                'mensaje' => 'El Usuario ES MENOR de edad'
@@ -77,8 +77,8 @@ class Tabla_EstudioController extends Controller
                         'mensaje' => 'El Usuario NO puede terminar sus estudio superando la fecha actual'
                     ]);
                 }
-                $fecha_terminacion=Carbon::parse($request['fecha_terminacion'])->age;
-                if ($fecha_terminacion < 18) {
+                $fecha_M_edad=Carbon::parse($user->fecha_nacimiento)->addYear(18);
+                if ($fecha_M_edad->toDateString() > $request['fecha_terminacion'] ) {
                    return redirect()->back()->with([
                        'created' => 0,
                        'mensaje' => 'El Usuario ES MENOR de edad'
